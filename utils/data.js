@@ -26,9 +26,6 @@ const usernames = [
     'rosebud04',
     'mwelle',
     'jasper',
-    'yellow-crayon',
-    'orange-boot',
-    'red-truck',
 ]
 
 const thoughts = [
