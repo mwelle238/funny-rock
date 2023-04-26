@@ -39,13 +39,25 @@ module.exports = {
   async deleteUser(req, res) {
     try {
       const user = await User.findOneAndDelete({ _id: req.params.userId });
-
+      console.log(user.friends[0].valueOf());
       if (!user) {
         res.status(404).json({ message: 'No user with that ID' });
       }
 
       await Thought.deleteMany({ _id: { $in: user.thoughts } });
       res.json({ message: 'User and thoughts deleted!' });
+      for (let i=0; i<user.friends.length; i++){
+        const friend = await User.findOneAndUpdate(
+          { _id: user.friends[i].valueOf() },
+          { $pull: { friends: user._id } },
+          { runValidators: true, new: true }
+        )
+        if (!friend) {
+          res.status(404).json({ message: 'error deleting friend\'s freinds array'});
+        } else {
+          console.log(`removing ${user._id} from friend array of ${friend._id}`);
+        }
+      }
     } catch (err) {
       res.status(500).json(err);
     }
@@ -101,12 +113,12 @@ module.exports = {
     try {
       const user = User.findOneAndUpdate(
         { _id: req.params.userId },
-        { $pull: { friend: { _id: req.params.friendId } } },
+        { $pull: { friends: { _id: req.params.friendId } } },
         { runValidators: true, new: true }
       );
       const friend = User.findOneAndUpdate(
         { _id: req.params.friendId },
-        { $pull: { friend: { _id: req.params.userId } } },
+        { $pull: { friends: { _id: req.params.userId } } },
         { runVaildators: true, new: true }
       );
 

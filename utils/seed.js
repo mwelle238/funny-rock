@@ -43,8 +43,7 @@ connection.once('open', async () => {
   for(let i=0; i < reactionData.length; i++){
     const reactionBody = reactionData[i];
     const username = names[Math.floor(Math.random()*names.length)];  // assign a random username to the thought
-    // these 2 lines get the thought _id from a random thought in the array
-    const thtId = thoughts[Math.floor(Math.random()*thoughts.length)]._id;
+    const thtId = thoughts[Math.floor(Math.random()*thoughts.length)]._id;  //gets random thought id
     // update the thought to add a reaction
     try {  
         const thought = await Thought.findOneAndUpdate(
@@ -65,22 +64,18 @@ connection.once('open', async () => {
     let y= x;
     do {
     y = Math.floor(Math.random()*names.length);
-    } while ( x === y);
-    const xx = users[x]._id;
-    const yy = users[y]._id;
-    const friendX = JSON.stringify(xx).split("\"")[1];
-    const friendY = JSON.stringify(yy).split("\"")[1];
+    } while ( x === y);  // don't want users to friend themselves
     try {
         // add friendId to user's friends
         const user = await User.findOneAndUpdate(
-          { _id: friendX },
-          { $addToSet: { friends: friendY } },
+          { _id: users[x]._id.valueOf() },
+          { $addToSet: { friends: users[y]._id.valueOf() } },
           { runValidators: true, new: true }
         );
         // add userId to friend's friends
         const friend = await User.findOneAndUpdate(
-          { _id: friendY },
-          { $addToSet: { friends: friendX } },
+          { _id: users[y]._id.valueOf() },
+          { $addToSet: { friends: users[x]._id.valueOf() } },
           { runValidators: true, new: true }
         )
   
