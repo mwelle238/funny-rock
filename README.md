@@ -62,4 +62,4 @@ Github: [github.com/mwelle238](https://www.github.com/mwelle238)
 
 ## Walkthrough
 
-![Video Link](https://drive.google.com/file/d/1bZc6zKXq9xS6NSYNBhtHkgEDhWMcaBLO/view)
+![Video Link](https://watch.screencastify.com/v/6kJDcebNgODGIdDkOx3g)
