@@ -46,6 +46,9 @@ const reactions = [
     'dislike',
     'that\'s really profound',
     'Thanks! I hate it.',
+    'I never thought about that',
+    'Weird',
+    'You have too much time on your hands'
 ]
 
 const getUsernames = () => {

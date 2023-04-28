@@ -30,7 +30,15 @@ module.exports = {
   async createThought(req, res) {
     try {
       const thought = await Thought.create(req.body);
-      res.json(thought);
+      const user = await User.findOneAndUpdate(
+        { username: thought.username },
+        { $addToSet: { thoughts: thought._id.valueOf() } },
+        { runValidators: true, new: true }
+      );
+      if (!user) {
+        return res.status(404).json({ message: "No user with username found"})
+      }
+      res.json({thought, user});
     } catch (err) {
       res.status(500).json(err);
     }
@@ -39,13 +47,38 @@ module.exports = {
   async deleteThought(req, res) {
     try {
       const thought = await Thought.findOneAndRemove({ _id: req.params.thoughtId });
+      const user = await User.findOneAndUpdate(
+        { username: thought.username },
+        { $pull: { thoughts: req.params.thoughtId } },
+        { runValidators: true, new: true }
+      );
       if (!thought) {
         return res.status(404).json({ message: 'No such thought exists' });
       }
-      res.json({ message: 'Thought successfully deleted' });
+      if (!user) {
+        return res.status(404).json({ message: 'No user with username associated with this thought found'});
+      }
+      res.json({ message: 'Thought successfully deleted', thought, user });
     } catch (err) {
       console.log(err);
       res.status(500).json(err);
+    }
+  },
+
+  async updateThought(req, res) {
+    try {
+        const thought = await Thought.findOneAndUpdate(
+            { _id: req.params.thoughtId },
+            { thoughtText: req.body.thoughtText }, // only allow updating of thought text
+            { runValidators: true, new: true },
+        );
+        if (!thought) {
+            return res.status(404).json({ message: 'no such thought exists'});
+        }
+        res.json(thought);
+    } catch (err) {
+        console.log(err);
+        res.status(500).json(err);
     }
   },
 
@@ -76,7 +109,7 @@ module.exports = {
     try {
       const thought = await Thought.findOneAndUpdate(
         { _id: req.params.thoughtId },
-        { $pull: { reaction: { reactionId: req.params.reactionId } } },
+        { $pull: { reactions: { reactionId: req.params.reactionId } } },
         { runValidators: true, new: true }
       );
       if (!thought) {

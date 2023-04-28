@@ -17,7 +17,6 @@ router
   .put(updateUser)
   .delete(deleteUser);
 
-  // /api/thoughts/:thoughtId/reactions
 router.route('/:userId/friends/:friendId').post(addFriendship).delete(removeFriendship);
 
 module.exports = router;
